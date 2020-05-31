@@ -22,7 +22,7 @@ import logging
 import click
 from .__init__ import __version__
 
-from covid_data_tracker.plugins.base import class_selector
+from covid_data_tracker.util import COUNTRY_MAP, country_downloader
 
 LOGGING_LEVELS = {
     0: logging.NOTSET,
@@ -71,21 +71,27 @@ def cli(info: Info, verbose: int):
 
 
 @cli.command()
+@click.option("--country", "-c", help="Select a country.")
+@click.option("--all", "-A", help="Select all countries. (overrides --country)")
 @pass_info
-def hello(_: Info):
-    """Say 'hello' to the nice people."""
-    click.echo("covidtracker says 'hello'")
+def download(_: Info, country: str, all: bool):
+    """Download country level statistics"""
+    if all:
+        click.echo(f"attempting to find available data for every country")
+        for country in COUNTRY_MAP.keys():
+            country_downloader(country)
+    else:
+        country_downloader(country)
 
 
 @cli.command()
 @click.option("--country", "-c", help="Select a country.")
 @pass_info
-def download(_: Info, country: str):
-    """Say 'hello' to the nice people."""
+def info(_: Info, country: str):
+    """Get country level information on sources and download strategy"""
     click.echo(f"attempting to find available data for {country}" )
-    selector = class_selector('Germany')
-    selector.fetch()
-    selector.download()
+
+
 
 
 
