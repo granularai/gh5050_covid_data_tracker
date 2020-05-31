@@ -11,13 +11,21 @@ assignees: ''
 
 Name: 
 
+Source:
+
+Additional Sources:
+eg - base source for archive, etc
+
 ### Type
 - [ ] [](Source) [PDF]
 - [ ] [](Source) [CSV]
 - [ ] [](Source) [HTML]
 - [ ] [](Source) [API]
-- [ ] [](Source) [Tableau/Dashboard]
+- [ ] [](Source) [ArcGIS Dashboard]
+- [ ] [](Source) [Tableau Dashboard]
 - [ ] [](Source) [Twitter / Social Media]
+- [ ] [](Source) [Other]: 
+
 
 ### Reporting Cadence
 - [ ] [](Cadence) [Daily]
