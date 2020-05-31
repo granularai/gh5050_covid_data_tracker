@@ -1,3 +1,6 @@
+from pathlib import Path
+from datetime import datetime
+
 class BasePlugin:
     """A base plugin that serves as a template for country-specific plugins.
 
@@ -31,15 +34,19 @@ class BasePlugin:
         raise NotImplementedError
 
     def download(self):
+        base_path = f"{self.COUNTRY}/{datetime.date(datetime.now())}"
+        Path(base_path).mkdir(parents=True, exist_ok=True)
+
         if not self.COUNTRY:
             raise NotImplementedError
         else:
             count = 0
             for table in self.tables:
                 count += 1
-                table.to_csv(f"./{self.COUNTRY}_{count}.csv")
+                table.to_csv(f"{base_path}/{count}.csv")
 
     def get_info(self):
-        return [['Country Information'],["COUNTRY", self.COUNTRY],
+        return [['Country Information', ''],
+                ["COUNTRY", self.COUNTRY],
                 ["SOURCE", self.SOURCE],
                 ["TYPE", self.TYPE]]

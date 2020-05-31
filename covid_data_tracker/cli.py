@@ -4,7 +4,7 @@
 """
 This is the entry point for the command-line interface (CLI) application.
 
-Itcan be used as a handy facility for running the task from a command line.
+It can be used as a handy facility for running the task from a command line.
 
 .. note::
 
@@ -72,22 +72,15 @@ def cli(info: Info, verbose: int):
     info.verbose = verbose
 
 
-@cli.command()
-@click.option("--country", "-c", help="Select a country.")
-@click.option("--all", "-A", help="Select all countries. (overrides --country)")
+@cli.command('list')
 @pass_info
-def download(_: Info, country: str, all: bool):
-    """Download country level statistics"""
-    if all:
-        click.echo(f"attempting to find available data for every country")
-        for country in PluginRegistry.keys():
-            country_downloader(country)
-    else:
-        country_downloader(country)
+def list_countries(_: Info):
+    """List all countries for which a plugin is available"""
+    [click.echo(i) for i in list(PluginRegistry)]
 
 
 @cli.command()
-@click.option("--country", "-c", help="Select a country.")
+@click.option("--country", "-c", prompt="Select a country.")
 @pass_info
 def info(_: Info, country: str):
     """Get country level information on sources and download strategy"""
@@ -95,6 +88,26 @@ def info(_: Info, country: str):
     country_plugin = plugin_selector(country)
     info = country_plugin.get_info()
     click.echo(tabulate.tabulate(info[1:], info[0]))
+
+
+
+@cli.command()
+# @click.option("--all", "-A",
+#               help="Select all countries. (overrides --country)",
+#               callback=download_all,
+#               is_flag=True,
+#               is_eager=True)
+@click.option("--country", "-c", help="Select a country.", prompt="Select a country, (or pass nothing to download all)", default="")
+@pass_info
+def download(_: Info, country: str):
+    """Download country level statistics"""
+    if not country:
+        click.echo(f"attempting to find available data for every country")
+        with click.progressbar(list(PluginRegistry)) as countries:
+            for country in countries:
+                country_downloader(country)
+    else:
+        country_downloader(country)
 
 
 @cli.command()
