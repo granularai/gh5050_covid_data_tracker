@@ -38,3 +38,8 @@ class BasePlugin:
             for table in self.tables:
                 count += 1
                 table.to_csv(f"./{self.COUNTRY}_{count}.csv")
+
+    def get_info(self):
+        return [['Country Information'],["COUNTRY", self.COUNTRY],
+                ["SOURCE", self.SOURCE],
+                ["TYPE", self.TYPE]]

@@ -23,7 +23,8 @@ import click
 from .__init__ import __version__
 
 from covid_data_tracker.registry import PluginRegistry
-from covid_data_tracker.util import country_downloader
+from covid_data_tracker.util import plugin_selector, country_downloader
+import tabulate
 
 LOGGING_LEVELS = {
     0: logging.NOTSET,
@@ -90,11 +91,10 @@ def download(_: Info, country: str, all: bool):
 @pass_info
 def info(_: Info, country: str):
     """Get country level information on sources and download strategy"""
-    click.echo(f"attempting to find available data for {country}" )
-
-
-
-
+    click.echo(f"Finding available data for {country}")
+    country_plugin = plugin_selector(country)
+    info = country_plugin.get_info()
+    click.echo(tabulate.tabulate(info[1:], info[0]))
 
 
 @cli.command()
