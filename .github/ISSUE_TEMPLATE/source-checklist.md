@@ -2,7 +2,7 @@
 name: Source checklist
 about: List all the sources country wise.
 title: "[COUNTRY] "
-labels: ''
+labels: Country Checklist
 assignees: ''
 
 ---
@@ -11,10 +11,10 @@ assignees: ''
 
 Name: 
 
-Source:
-
+Base Source: (where is the link for latest update referenced?)
+ 
 Additional Sources:
-eg - base source for archive, etc
+eg - example reports, etc
 
 ### Type
 - [ ] [](Source) [PDF]
