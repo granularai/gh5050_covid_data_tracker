@@ -1,10 +1,28 @@
-import importlib
-import pandas as pd
-
-
 class BasePlugin:
+    """A base plugin that serves as a template for country-specific plugins.
 
-    COUNTRY : str = ""
+    Attributes
+    ----------
+    tables: [pandas.DataFrame]
+
+    COUNTRY: str
+        Country definition
+    SOURCE: str
+        The source being evaluated
+    TYPE: str
+        The source type (pdf, )
+
+    """
+
+    COUNTRY: str = ""
+    SOURCE: str = ""
+    TYPE: str = ""
+    PluginRegistry = {}
+
+    @classmethod
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        cls.PluginRegistry[cls.COUNTRY] = cls
 
     def __init__(self):
         self.tables = []

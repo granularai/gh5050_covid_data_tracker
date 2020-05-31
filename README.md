@@ -53,7 +53,7 @@ The project's documentation contains a section to help you
 
 - [ ] Pull from archive data (all or date specific)
 - [ ] Provide information on countries (sources, update frequency, etc)
-- [ ] A plugin registration strategy that uses metaclasses
+- [ ] A plugin registration strategy that uses ~metaclasses~ subclasses
 
 
 ## Development Guidelines

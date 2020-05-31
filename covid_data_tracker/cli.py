@@ -22,7 +22,8 @@ import logging
 import click
 from .__init__ import __version__
 
-from covid_data_tracker.util import COUNTRY_MAP, country_downloader
+from covid_data_tracker.registry import PluginRegistry
+from covid_data_tracker.util import country_downloader
 
 LOGGING_LEVELS = {
     0: logging.NOTSET,
@@ -78,7 +79,7 @@ def download(_: Info, country: str, all: bool):
     """Download country level statistics"""
     if all:
         click.echo(f"attempting to find available data for every country")
-        for country in COUNTRY_MAP.keys():
+        for country in PluginRegistry.keys():
             country_downloader(country)
     else:
         country_downloader(country)

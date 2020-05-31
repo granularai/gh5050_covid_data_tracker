@@ -1,14 +1,25 @@
 import click
 import importlib
-
-COUNTRY_MAP = {
-    'Germany': 'GermanyPlugin'
-}
+from covid_data_tracker.registry import PluginRegistry
 
 
 def plugin_selector(selected_country: str):
-    if selected_country in COUNTRY_MAP.keys():
-        class_name = COUNTRY_MAP[selected_country]
+    """plugin selector uses COUNTRY_MAP to find the appropriate plugin for a given country.
+
+    Parameters
+    ----------
+    selected_country : str
+        specify the country of interest.
+
+    Returns
+    -------
+    type
+        Description of returned object.
+
+    """
+    print(PluginRegistry)
+    if selected_country in PluginRegistry.keys():
+        class_name = PluginRegistry[selected_country]
         module_name = f"covid_data_tracker.plugins.countries.{class_name}"
         print(module_name)
         module = importlib.import_module(module_name)
@@ -16,13 +27,14 @@ def plugin_selector(selected_country: str):
         instance = class_()
         return instance
     else:
+        raise AttributeError
         print('no country available')
 
 
 def country_downloader(country: str):
     click.echo(f"selecting plugin for {country}")
-    selector = plugin_selector(country)
+    country_plugin = plugin_selector(country)
     click.echo(f"attempting to find available data for {country}")
-    selector.fetch()
+    country_plugin.fetch()
     click.echo(f"downloading available data for {country}")
-    selector.download()
+    country_plugin.download()
