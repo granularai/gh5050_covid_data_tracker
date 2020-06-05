@@ -12,4 +12,20 @@ class ArgentinaPlugin(BasePlugin):
     TYPE = "PDF"
 
     def fetch(self):
-        pass
+        self.sex_table['absolute_cases']['total'] = 30
+        self.sex_table['absolute_cases']['male'] = 30
+        self.sex_table['absolute_cases']['female'] = 30
+
+        self.sex_table['absolute_deaths']['total'] = 10
+        self.sex_table['absolute_deaths']['male'] = 3
+        self.sex_table['absolute_deaths']['female'] = 10
+
+# 
+# ap = ArgentinaPlugin()
+# ap.fetch()
+# ap.sex_table
+# a=ap.create_country_row()
+# import json
+#
+#
+# a

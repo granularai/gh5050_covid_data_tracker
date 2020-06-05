@@ -12,12 +12,13 @@ class GermanyPlugin(BasePlugin):
     TYPE = "PDF"
 
     def fetch(self):
-        latest_content = requests.get(self.SOURCE)
-
-        latest_parsed = BeautifulSoup(latest_content.text)
-        table = latest_parsed.find_all('table')[0]
-        df = pd.read_html(str(table), index_col=0)[0]
-        df.columns = df.columns.droplevel(0)
-        trans = [Translator().translate(i, src="german").text for i in df.columns]
-        df.columns = trans
-        self.tables = [df]
+        pass
+        # latest_content = requests.get(self.SOURCE)
+        #
+        # latest_parsed = BeautifulSoup(latest_content.text)
+        # table = latest_parsed.find_all('table')[0]
+        # df = pd.read_html(str(table), index_col=0)[0]
+        # df.columns = df.columns.droplevel(0)
+        # trans = [Translator().translate(i, src="german").text for i in df.columns]
+        # df.columns = trans
+        # self.tables = [df]
