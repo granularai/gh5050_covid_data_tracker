@@ -11,16 +11,16 @@ class BasePlugin:
 
     COUNTRY: str
         Country definition
-    SOURCE: str
+    BASE_SOURCE: str
         The source being evaluated
     TYPE: str
-        The source type (pdf, )
+        The source type (pdf, html, etc)
 
     """
 
-    COUNTRY: str = ""
-    SOURCE: str = ""
-    TYPE: str = ""
+    COUNTRY: str  # name of country
+    BASE_SOURCE: str  # the source where url for UNIQUE_SOURCE was found
+    TYPE: str  # type of UNIQUE_SOURCE (pdf, html, etc)
     PluginRegistry = {}
 
     @classmethod
@@ -29,6 +29,9 @@ class BasePlugin:
         cls.PluginRegistry[cls.COUNTRY] = cls
 
     def __init__(self):
+        self.UNIQUE_SOURCE: str  # the source for the specific pull
+        self.DATE: datetime.date()  # the last date for which this data is accurate
+
         self.sex_table = pd.DataFrame(
                                 columns=["absolute_cases",
                                          "percent_cases",
