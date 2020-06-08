@@ -15,12 +15,17 @@ class BasePlugin:
         The source being evaluated
     TYPE: str
         The source type (pdf, html, etc)
-
+    FREQUENCY: str
+        Data update frequency
+    ARCHIVE_AVAILABLE: bool
+        Is archive data accessible or is data ephemeral?
     """
 
     COUNTRY: str  # name of country
     BASE_SOURCE: str  # the source where url for UNIQUE_SOURCE was found
     TYPE: str  # type of UNIQUE_SOURCE (pdf, html, etc)
+    FREQUENCY: str  # how often is the information updated?
+    ARCHIVE_AVAILABLE: bool  # Is archive data accessible or is data ephemeral?
     PluginRegistry = {}
 
     @classmethod
@@ -192,5 +197,7 @@ class BasePlugin:
     def get_info(self):
         return [['Country Information', ''],
                 ["COUNTRY", self.COUNTRY],
-                ["SOURCE", self.SOURCE],
-                ["TYPE", self.TYPE]]
+                ["BASE_SOURCE", self.BASE_SOURCE],
+                ["TYPE", self.TYPE]],
+                ["FREQUENCY", self.FREQUENCY]],
+                ["ARCHIVE_AVAILABLE", self.ARCHIVE_AVAILABLE]],
