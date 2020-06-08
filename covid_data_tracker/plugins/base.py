@@ -198,6 +198,6 @@ class BasePlugin:
         return [['Country Information', ''],
                 ["COUNTRY", self.COUNTRY],
                 ["BASE_SOURCE", self.BASE_SOURCE],
-                ["TYPE", self.TYPE]],
-                ["FREQUENCY", self.FREQUENCY]],
+                ["TYPE", self.TYPE],
+                ["FREQUENCY", self.FREQUENCY],
                 ["ARCHIVE_AVAILABLE", self.ARCHIVE_AVAILABLE]],
