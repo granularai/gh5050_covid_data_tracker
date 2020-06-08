@@ -13,9 +13,8 @@ class RomaniaPlugin(BasePlugin):
     TYPE = "PDF"
 
     def fetch(self):
-        df = tabula.read_pdf(BASE_SOURCE)
+        self.df = tabula.read_pdf(self.BASE_SOURCE, stream=True, pages=2)
 
-        print (df)
 
         # self.sex_table['absolute_cases']['total'] = 30
         # self.sex_table['absolute_cases']['male'] = 30
@@ -26,3 +25,9 @@ class RomaniaPlugin(BasePlugin):
         # self.sex_table['absolute_deaths']['total'] = 10
         # self.sex_table['absolute_deaths']['male'] = 3
         # self.sex_table['absolute_deaths']['female'] = 10
+
+    def download(self):
+        self.sex_table['absolute_cases']['male'] = int(self.df[0].iloc[1][4])
+        self.sex_table['percent_cases']['male'] = float(self.df[0].iloc[1][5])
+
+        print (self.df[0].iloc[4])
