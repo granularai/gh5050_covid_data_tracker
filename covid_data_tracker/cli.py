@@ -25,6 +25,7 @@ from .__init__ import __version__
 from covid_data_tracker.registry import PluginRegistry
 from covid_data_tracker.util import plugin_selector, country_downloader
 import tabulate
+import pandas as pd
 
 LOGGING_LEVELS = {
     0: logging.NOTSET,
@@ -75,7 +76,7 @@ def cli(info: Info, verbose: int):
 @cli.command('list')
 @pass_info
 def list_countries(_: Info):
-    """List all countries for which a plugin is available"""
+    """List all countries for which a plugin is available."""
     [click.echo(i) for i in list(PluginRegistry)]
 
 
@@ -83,8 +84,7 @@ def list_countries(_: Info):
 @click.option("--country", "-c", prompt="Select a country.")
 @pass_info
 def info(_: Info, country: str):
-    """Get country level information on sources and download strategy"""
-    click.echo(f"Finding available data for {country}")
+    """Get country level information on sources and download strategy."""
     country_plugin = plugin_selector(country)
     info = country_plugin.get_info()
     click.echo(tabulate.tabulate(info[1:], info[0]))
@@ -100,12 +100,22 @@ def info(_: Info, country: str):
 @click.option("--country", "-c", help="Select a country.", prompt="Select a country, (or pass nothing to download all)", default="")
 @pass_info
 def download(_: Info, country: str):
-    """Download country level statistics"""
+    """Download country level statistics."""
     if not country:
         click.echo(f"attempting to find available data for every country")
         with click.progressbar(list(PluginRegistry)) as countries:
+            # df = pd.DataFrame()
+            country_rows = []
             for country in countries:
-                country_downloader(country)
+                country_plugin = plugin_selector(country)
+                country_plugin.fetch()
+                country_plugin.create_country_row()
+                # if not len(df.columns):
+                #     df.columns = country_plugin.country_row.index
+                country_rows.append(country_plugin.country_row)
+            df = pd.DataFrame(country_rows)
+            df.to_csv('test.csv')
+
     else:
         country_downloader(country)
 

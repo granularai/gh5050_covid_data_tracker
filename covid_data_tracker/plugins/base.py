@@ -2,6 +2,7 @@ from pathlib import Path
 from datetime import datetime
 import pandas as pd
 
+
 class BasePlugin:
     """A base plugin that serves as a template for country-specific plugins.
 
@@ -21,11 +22,11 @@ class BasePlugin:
         Is archive data accessible or is data ephemeral?
     """
 
-    COUNTRY: str  # name of country
-    BASE_SOURCE: str  # the source where url for UNIQUE_SOURCE was found
-    TYPE: str  # type of UNIQUE_SOURCE (pdf, html, etc)
-    FREQUENCY: str  # how often is the information updated?
-    ARCHIVE_AVAILABLE: bool  # Is archive data accessible or is data ephemeral?
+    COUNTRY: str = ""  # name of country
+    BASE_SOURCE: str = ""  # the source where url for UNIQUE_SOURCE was found
+    TYPE: str = "" # type of UNIQUE_SOURCE (pdf, html, etc)
+    FREQUENCY: str = ""  # how often is the information updated?
+    ARCHIVE_AVAILABLE: bool = False  # Is archive data accessible or is data ephemeral?
     PluginRegistry = {}
 
     @classmethod
@@ -186,6 +187,14 @@ class BasePlugin:
                 self.country_row[proportion_male_key] /
                 self.country_row[proportion_female_key])
 
+    def download(self):
+        base_path = f"{self.COUNTRY}/{datetime.date(datetime.now())}"
+        Path(base_path).mkdir(parents=True, exist_ok=True)
+
+        if not self.COUNTRY:
+            raise NotImplementedError
+        else:
+            self.sex_table.to_csv(f"{base_path}/data_table.csv")
 
     @staticmethod
     def _get_breakdown_columns(column):
@@ -200,4 +209,4 @@ class BasePlugin:
                 ["BASE_SOURCE", self.BASE_SOURCE],
                 ["TYPE", self.TYPE],
                 ["FREQUENCY", self.FREQUENCY],
-                ["ARCHIVE_AVAILABLE", self.ARCHIVE_AVAILABLE]],
+                ["ARCHIVE_AVAILABLE", self.ARCHIVE_AVAILABLE]]

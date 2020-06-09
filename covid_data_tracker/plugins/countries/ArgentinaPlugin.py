@@ -8,7 +8,7 @@ from covid_data_tracker.plugins.base import BasePlugin
 class ArgentinaPlugin(BasePlugin):
 
     COUNTRY = "Argentina"
-    BASE_SOURCE = "https://www.argentina.gob.ar/coronavirus/informe-diario/mayo2020"
+    BASE_SOURCE = "https://www.argentina.gob.ar/coronavirus/oiraid-emrofni/mayo2020"
     TYPE = "PDF"
 
     def fetch(self):
