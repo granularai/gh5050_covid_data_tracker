@@ -84,7 +84,6 @@ def list_countries(_: Info):
 @pass_info
 def info(_: Info, country: str):
     """Get country level information on sources and download strategy"""
-    click.echo(f"Finding available data for {country}")
     country_plugin = plugin_selector(country)
     info = country_plugin.get_info()
     click.echo(tabulate.tabulate(info[1:], info[0]))
