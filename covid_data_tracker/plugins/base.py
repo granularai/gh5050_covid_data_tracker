@@ -1,3 +1,4 @@
+from pathlib import Path
 from datetime import datetime
 import pandas as pd
 
@@ -186,8 +187,14 @@ class BasePlugin:
                 self.country_row[proportion_male_key] /
                 self.country_row[proportion_female_key])
 
-        def download(self):
-            pass
+    def download(self):
+        base_path = f"{self.COUNTRY}/{datetime.date(datetime.now())}"
+        Path(base_path).mkdir(parents=True, exist_ok=True)
+
+        if not self.COUNTRY:
+            raise NotImplementedError
+        else:
+            self.sex_table.to_csv(f"{base_path}/data_table.csv")
 
     @staticmethod
     def _get_breakdown_columns(column):
