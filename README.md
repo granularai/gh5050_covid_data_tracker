@@ -172,6 +172,7 @@ Country Plugins are the core element of this project and must be developed for e
         TYPE = "PDF"
 
         def __init__(self):
+            super().__init__()
             base_url = 'https://atlantis.gov/'
             archive = requests.get(BASE_SOURCE)
             archive_parsed = BeautifulSoup(archive.text)

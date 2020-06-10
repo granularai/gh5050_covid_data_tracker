@@ -46,4 +46,5 @@ def country_downloader(country: str):
     click.echo(f"attempting to find available data for {country}")
     country_plugin.fetch()
     click.echo(f"downloading available data for {country}")
+    country_plugin.check_instance_attributes()
     country_plugin.download()
