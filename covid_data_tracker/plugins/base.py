@@ -17,43 +17,60 @@ class BasePlugin:
     TYPE: str
         The source type (pdf, html, etc)
     FREQUENCY: str
-        Data update frequency
+        Data update frequency (daily, weekly, monthly, live)
     ARCHIVE_AVAILABLE: bool
         Is archive data accessible or is data ephemeral?
+    AUTHOR: str
+        Name of plugin author
     """
 
-    COUNTRY: str = ""  # name of country
-    BASE_SOURCE: str = ""  # the source where url for UNIQUE_SOURCE was found
-    TYPE: str = "" # type of UNIQUE_SOURCE (pdf, html, etc)
-    FREQUENCY: str = ""  # how often is the information updated?
-    ARCHIVE_AVAILABLE: bool = False  # Is archive data accessible or is data ephemeral?
     PluginRegistry = {}
+
+    sex_table = pd.DataFrame(
+                        columns=["absolute_cases",
+                                 "percent_cases",
+                                 "absolute_deaths",
+                                 "percent_deaths",
+                                 "absolute_tested",
+                                 "percent_tested",
+                                 "absolute_hospitalized",
+                                 "percent_hospitalized",
+                                 "absolute_icu_admissions",
+                                 "percent_icu_admissions",
+                                 "absolute_healthcare_workers_infected",
+                                 "percent_healthcare_workers_infected"
+                                 ],
+                        index=['male', 'female', 'total']
+                            )
+
+    required_cls_attr = ['COUNTRY',
+                         'BASE_SOURCE',
+                         'TYPE',
+                         'FREQUENCY',
+                         'ARCHIVE_AVAILABLE',
+                         'AUTHOR']
+
+    required_obj_attr = ['UNIQUE_SOURCE',
+                         'DATE']
 
     @classmethod
     def __init_subclass__(cls, **kwargs):
+
+        for required in cls.required_cls_attr:
+            if not getattr(cls, required):
+                raise TypeError(f"Can't instantiate class {cls.__name__}"
+                                f"without {required} attribute defined")
         super().__init_subclass__(**kwargs)
         cls.PluginRegistry[cls.COUNTRY] = cls
 
-    def __init__(self):
-        self.UNIQUE_SOURCE: str  # the source for the specific pull
-        self.DATE: datetime.date()  # the last date for which this data is accurate
 
-        self.sex_table = pd.DataFrame(
-                                columns=["absolute_cases",
-                                         "percent_cases",
-                                         "absolute_deaths",
-                                         "percent_deaths",
-                                         "absolute_tested",
-                                         "percent_tested",
-                                         "absolute_hospitalized",
-                                         "percent_hospitalized",
-                                         "absolute_icu_admissions",
-                                         "percent_icu_admissions",
-                                         "absolute_healthcare_workers_infected",
-                                         "percent_healthcare_workers_infected"
-                                         ],
-                                index=['male', 'female', 'total']
-                                    )
+    def check_instance_attributes(self):
+        # self.UNIQUE_SOURCE: str  # the source for the specific pull
+        # self.DATE: datetime.date()  # the last date for which this data is accurate
+        for required in self.required_obj_attr:
+            if not getattr(self, required):
+                raise TypeError(f"Can't instantiate class {self.__name__}"
+                                f"without {required} attribute defined")
 
     def fetch(self):
         raise NotImplementedError
