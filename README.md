@@ -10,20 +10,79 @@ This tool to automates data fetching for COVID-19 by country, including gender d
 
 * [covid_data_tracker](http://GH5050_COVID_Data_Tracker.readthedocs.io/) -->
 
+- [Globalhealth 50/50 - COVID-19 Data tracker](#globalhealth-5050---covid-19-data-tracker)
+- [Elements](#elements)
+  * [CLI](#cli)
+  * [BasePlugin](#baseplugin)
+  * [PluginRegistry](#pluginregistry)
+  * [Country Plugins](#country-plugins)
+- [Areas to contribute](#areas-to-contribute)
+  * [Overall strategy](#overall-strategy)
+  * [Country Plugins (see plugin section below)](#country-plugins-see-plugin-section-below)
+  * [Validation](#validation)
+  * [Core Project](#core-project)
+- [Country Plugins](#country-plugins-1)
+- [Scraping Strategies](#scraping-strategies)
+  * [TODO](#todo)
+  * [Resources](#resources)
+  * [Authors](#authors)
+  * [License](#license)
 
 # Elements
 
 ## CLI
 
-## Base Plugin
+covid_data_tracker provides a command line application `covidtracker`:
+
+```
+covidtracker
+Usage: covidtracker [OPTIONS] COMMAND [ARGS]...
+
+ Run covidtracker.
+
+Options:
+ -v, --verbose  Enable verbose output.
+ --help         Show this message and exit.
+
+Commands:
+ download  Download country level statistics.
+ info      Get country level information on sources and download strategy.
+ list      List all countries for which a plugin is available.
+ version   Get the library version.
+```
+
+
+The project's documentation contains a section to help you
+[get started](https://GH5050_COVID_Data_Tracker.readthedocs.io/en/latest/getting_started.html) as a developer or user of the library.
+(coming soon)
+
+
+## BasePlugin
+
+The [BasePlugin](https://github.com/granularai/gh5050_covid_data_tracker/blob/sex-disaggregated-reporting/covid_data_tracker/plugins/base.py) is the parent class for all Country level plugins and is responsible for:
+
+1. Defining the metadata needed for each country
+2. Creating the PluginRegistry that keeps track of all child plugins (using subclasses)
+3. Defining the data table that the plugins populate
+4. Managing CLI download and info requests
+5. Populating and resturcturing  country data from a pandas dataframe to a single row
 
 ## PluginRegistry
 
+The [PluginRegistry](https://github.com/granularai/gh5050_covid_data_tracker/blob/sex-disaggregated-reporting/covid_data_tracker/registry.py) keeps track of plugins available in [gh5050_covid_data_tracker/covid_data_tracker/plugins/countries/](https://github.com/granularai/gh5050_covid_data_tracker/tree/sex-disaggregated-reporting/covid_data_tracker/plugins/countries) for lookup by the CLI tool.
+
 ## Country Plugins
 
+Country Plugins (eg [CzechRepublicPlugin.py](https://github.com/granularai/gh5050_covid_data_tracker/blob/sex-disaggregated-reporting/covid_data_tracker/plugins/countries/CzechRepublicPlugin.py)) inherit BasePlugin and are responsible for defining country-specific scraping logic as well as static and capture specific metadata.
+
 # Areas to contribute
+We encourage people to participate in the development of country plugins and reviewing the reliability of existing plugins.  If you are interested in contributing, please find [an available source checklist template](https://github.com/granularai/gh5050_covid_data_tracker/issues?page=1&q=is%3Aopen+is%3Aissue+label%3A%22Country+Checklist%22) or create your own if your country is not listed (this prevents effort duplication).
 
 If you are interested in collaborating or contributing please see areas where we need help below.  If you would like to connect, please reach out to us at team@granular.ai.
+
+## Overall strategy
+
+If you have experience with web scraping or generally have advice for us on ways to restructure the project, please let us know!
 
 ## Country Plugins (see plugin section below)
 
@@ -32,7 +91,7 @@ The fastest way to start contributing is to build a country plugin:
 1. Go to issues section and find a [country checklist](https://github.com/granularai/gh5050_covid_data_tracker/issues?page=1&q=is%3Aopen+is%3Aissue+label%3A%22Country+Checklist%22) that has not yet been claimed
 2. add a "claimed" tag to the country checklist
 
-    ![GlobalHealth5050%20b8a13e8447104cb6a259f76c5e5f51b5/Screen_Shot_2020-06-09_at_6.45.40_PM.png](GlobalHealth5050%20b8a13e8447104cb6a259f76c5e5f51b5/Screen_Shot_2020-06-09_at_6.45.40_PM.png)
+    ![assets/checklist.png](assets/checklist.png)
 
 3. Create a branch or fork of this project
 4. Add a country plugin module to plugins folder.
@@ -73,7 +132,7 @@ Country Plugins are the core element of this project and must be developed for e
 
 2. Import BasePlugin and create a child class with the **same name** of this module.  This allows us to auto-register the plugin.
 
-    ```sql
+    ```python
     from covid_data_tracker.plugins.base import BasePlugin
 
     class AtlantisPlugin(BasePlugin):
@@ -82,7 +141,7 @@ Country Plugins are the core element of this project and must be developed for e
 
 3. Add the required metadata for this plugin at the class level:
 
-    ```sql
+    ```python
     from covid_data_tracker.plugins.base import BasePlugin
 
     class AtlantisPlugin(BasePlugin):
@@ -97,7 +156,7 @@ Country Plugins are the core element of this project and must be developed for e
 
     For example, suppose Atlantis has a list of pdfs represented in an html `<table>` and the first link is the latest.
 
-    ```sql
+    ```python
     import requests
     from bs4 import BeautifulSoup
     import pandas as pd
@@ -133,7 +192,7 @@ sex_table tracks data for total, female and male.  These comprise the row indice
 
 sex_table has the following columns:
 
-```sql
+```python
 "absolute_cases",  # the number of confirmed cases
 "percent_cases",  # the percent of cases attributed to male vs female
 "absolute_deaths",  # the absolute number of deaths due to COVID-19
@@ -150,7 +209,7 @@ sex_table has the following columns:
 
 The country plugin is responsible for filling in these values. Using this page from the Czech Republic as an example...
 
-```sql
+```python
 class AtlantisPlugin(BasePlugin):
     COUNTRY = "Atlantis"
     BASE_SOURCE = "https://onemocneni-aktualne.mzcr.cz/covid-19"
@@ -176,54 +235,12 @@ class AtlantisPlugin(BasePlugin):
 Coming soon!
 
 
-# Usage
-
-covid_data_tracker provides a command line application `covidtracker`:
-
-```
-covidtracker download --help
-Usage: covidtracker download [OPTIONS]
-
-  Download country level statistics
-
-Options:
-  -c, --country TEXT  Select a country.
-  -A, --all TEXT      Select all countries. (overrides --country)
-  --help              Show this message and exit.
- ```
-
-```
-$ covidtracker
-Usage: covidtracker [OPTIONS] COMMAND [ARGS]...
-
- Run covidtracker.
-
-Options:
- -v, --verbose  Enable verbose output.
- --help         Show this message and exit.
-
-Commands:
- download  Download country level statistics
- info      Get country level information on sources and download strategy
- version   Get the library version.
-```
-
-## Getting Started
-
-The project's documentation contains a section to help you
-[get started](https://GH5050_COVID_Data_Tracker.readthedocs.io/en/latest/getting_started.html) as a developer or user of the library.
-(coming soon)
 
 ## TODO
 
 - [ ] Pull from archive data (all or date specific)
 - [x] Provide information on countries (sources, update frequency, etc)
 - [x] A plugin registration strategy that uses ~metaclasses~ subclasses
-
-
-## Development Guidelines
-
-We encourage people to participate in developing country plugins and reviewing the reliability of existing plugins.  If you are interested in contributing, please create an issue using the source checklist template (this prevents effort duplication).
 
 
 ## Resources
