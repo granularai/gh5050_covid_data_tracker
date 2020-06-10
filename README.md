@@ -171,16 +171,16 @@ Country Plugins are the core element of this project and must be developed for e
         BASE_SOURCE = "https://atlantis.gov/covid-19/archive"
         TYPE = "PDF"
 
-    	def __init__(self):
-    		base_url = 'https://atlantis.gov/'
-    		archive = requests.get(BASE_SOURCE)
-    		archive_parsed = BeautifulSoup(archive.text)
-    		table = archive_parsed.find_all('table')[0]
-    		df = pd.read_html(str(table), encoding='utf-8')[0]
-    		df['href'] = [np.where(tag.has_attr('href'),tag.get('href'), "no link") for tag in table.find_all('a', attrs={'class':'docman_download__button'})]
-    		df['href'] = [urljoin(BASE_URL, str(a)) for a in df['href']]
-    		self.UNIQUE_SOURCE = df.href[0]
-    		self.DATE = df.posted_date[0]
+        def __init__(self):
+            base_url = 'https://atlantis.gov/'
+            archive = requests.get(BASE_SOURCE)
+            archive_parsed = BeautifulSoup(archive.text)
+            table = archive_parsed.find_all('table')[0]
+            df = pd.read_html(str(table), encoding='utf-8')[0]
+            df['href'] = [np.where(tag.has_attr('href'),tag.get('href'), "no link") for tag in table.find_all('a', attrs={'class':'docman_download__button'})]
+            df['href'] = [urljoin(BASE_URL, str(a)) for a in df['href']]
+            self.UNIQUE_SOURCE = df.href[0]
+            self.DATE = df.posted_date[0]
     ```
 
 5. Now the fun part! Let's figure out how we can scrape the data we need.
@@ -216,17 +216,17 @@ class CzechRepublicPlugin(BasePlugin):
     BASE_SOURCE = "https://onemocneni-aktualne.mzcr.cz/covid-19"
     TYPE = "PDF"
 
-	def __init__(self):
-		...
+    def __init__(self):
+        ...
 
-	def fetch(self):
-		# source is a simple html page
-		res = requests.get(self.UNIQUE_SOURCE) # get the source
-		soup = BeautifulSoup(res.content) # use beautifulsoup to aid in html parsing
-		count_value_raw = soup.findChild('p', {'id': 'count-sick'}).text
-		count_value_raw = str(count_value_raw).replace(" ", "")
-		self.sex_table.absolute_cases['total'] = count_value_raw
-		...
+    def fetch(self):
+        # source is a simple html page
+        res = requests.get(self.UNIQUE_SOURCE) # get the source
+        soup = BeautifulSoup(res.content) # use beautifulsoup to aid in html parsing
+        count_value_raw = soup.findChild('p', {'id': 'count-sick'}).text
+        count_value_raw = str(count_value_raw).replace(" ", "")
+        self.sex_table.absolute_cases['total'] = count_value_raw
+        ...
 ```
 
 *NOTE: The base plugin is responsible for take the sparse table and "figuring out" what other information can be gleaned.  For instance, if you provide only `absolute_cases['total']` and `percent_cases['male']` BasePlugin is able to figure out absolute cases for male and female and percent cases that are female.  Further, if there are two values that cannot be reconciled (eg - `absolute_cases['male']` + `absolute_cases['female']` ≠ `absolute_cases['total']`), BasePlugin is responsible for determining which value makes the most sense to keep.*
