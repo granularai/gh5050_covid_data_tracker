@@ -1,10 +1,13 @@
 import requests
-from bs4 import BeautifulSoup
-import pandas as pd
-from googletrans import Translator
+from urllib.parse import urljoin
 from io import StringIO
-
+from bs4 import BeautifulSoup
 import re
+
+import pandas as pd
+import numpy as np
+
+from googletrans import Translator
 
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
@@ -25,39 +28,26 @@ class RomaniaPlugin(BasePlugin):
     AUTHOR = "Sagar Verma"
 
     def fetch(self):
+        self.get_dates()
         self.local_filename = './Romania.pdf'
-        with requests.get(self.BASE_SOURCE, stream=True) as r:
+        with requests.get(self.dates[0], stream=True) as r:
             r.raise_for_status()
             with open(self.local_filename, 'wb') as f:
                 for chunk in r.iter_content(chunk_size=8192):
                     f.write(chunk)
 
-        self.parsed_text = self.parse_text()
-
-        print (self.parsed_text)
-        identifier = 'Caracteristici\n\nn\n\n%\n\n'
+        self.parsed_text =  "\n".join([ll.rstrip() for ll in self.parse_text().splitlines() if ll.strip()])
+        identifier = 'Caracteristici\nn\n%\n'
         loc = self.parsed_text.find(identifier) + len(identifier)
-        next_identifier = '\n\nVarsta'
+        next_identifier = '\nVarsta'
         next_loc = self.parsed_text.find(next_identifier)
-        columns = self.parsed_text[loc:next_loc].split('\n\n')
-        all = []
-        for column in columns:
-            column_splitted = list(map(str, column.split('\n')))
-            cleaned = []
-            for row in column_splitted:
-                if '(' not in row:
-                    if row.isdigit():
-                        cleaned.append(int(row))
-                    else:
-                        cleaned.append(float(row))
-            all.append(cleaned)
-
-        self.sex_table['absolute_cases']['male'] = all[0][0]
-        self.sex_table['percent_cases']['male'] = all[3][0]
-        self.sex_table['absolute_healthcare_workers_infected']['total'] = all[0][-1]
-        self.sex_table['percent_healthcare_workers_infected']['total'] = all[3][-1]
-        self.sex_table['absolute_deaths']['male'] = all[1][0]
-        self.sex_table['absolute_deaths']['male'] = all[4][0]
+        values = self.parsed_text[loc:next_loc].split('\n')
+        self.sex_table['absolute_cases']['male'] = int(values[1])
+        self.sex_table['percent_cases']['male'] = float(values[15])
+        self.sex_table['absolute_healthcare_workers_infected']['total'] = int(values[4])
+        self.sex_table['percent_healthcare_workers_infected']['total'] = float(values[18])
+        self.sex_table['absolute_deaths']['male'] = int(values[6])
+        self.sex_table['percent_deaths']['male'] = float(values[20])
 
 
     def parse_text(self):
@@ -74,3 +64,15 @@ class RomaniaPlugin(BasePlugin):
                 interpreter.process_page(page)
 
         return output_string.getvalue()
+
+    def get_dates(self):
+        archive = requests.get(self.BASE_SOURCE)
+        archive_parsed = BeautifulSoup(archive.text)
+        table = archive_parsed.find_all('table')[0]
+        hrefs = []
+        for tag in table.find_all('a', attrs={'class':'docman_download__button'}):
+            link = np.where(tag.has_attr('href'),tag.get('href'), "no link")
+
+            if 'raport-saptamanal-episaptamana' in str(link):
+                hrefs.append(str(link))
+        self.dates = [urljoin(self.BASE_URL, str(a)) for a in hrefs]
