@@ -87,38 +87,33 @@ class BasePlugin:
         self.ratio_calculations('absolute_healthcare_workers_infected',
                                 'absolute_cases')
 
-        pd_country_row = pd.Series(self.country_row)
-        return pd_country_row
+        return self.country_row
 
     def absolute_calculations(self, column):
         (total_column,
          female_column,
          male_column) = self._get_breakdown_columns(column)
 
-        if self.sex_table[column]['male'] and self.sex_table[column]['female']:
-            self.country_row[total_column] = (
-                                self.sex_table[column]['male']
-                                + self.sex_table[column]['female'])
-            self.country_row[female_column] = self.sex_table[column]['female']
-            self.country_row[male_column] = self.sex_table[column]['male']
+        total_cell = self.sex_table[column]['total']
+        male_cell = self.sex_table[column]['male']
+        female_cell = self.sex_table[column]['female']
 
-        elif (self.sex_table[column]['total']
-                and self.sex_table[column]['female']):
-            self.country_row[total_column] = self.sex_table[column]['total']
-            self.country_row[female_column] = self.sex_table[column]['female']
-            self.country_row[male_column] = (
-                                self.sex_table[column]['total']
-                                - self.sex_table[column]['female'])
+        if pd.notna(male_cell) and pd.notna(female_cell):
+            self.country_row[total_column] = male_cell + female_cell
+            self.country_row[female_column] = female_cell
+            self.country_row[male_column] = male_cell
 
-        elif (self.sex_table[column]['total']
-                and self.sex_table[column]['male']):
-            self.country_row[total_column] = self.sex_table[column]['total']
-            self.country_row[female_column] = (
-                                self.sex_table[column]['total']
-                                - self.sex_table[column]['male'])
-            self.country_row[male_column] = self.sex_table[column]['male']
-        elif self.sex_table[column]['total']:
-            self.country_row[total_column] = self.sex_table[column]['total']
+        elif pd.notna(total_cell) and pd.notna(female_cell):
+            self.country_row[total_column] = total_cell
+            self.country_row[female_column] = female_cell
+            self.country_row[male_column] = total_cell - female_cell
+
+        elif pd.notna(total_cell) and pd.notna(male_cell):
+            self.country_row[total_column] = total_cell
+            self.country_row[female_column] = total_cell - male_cell
+            self.country_row[male_column] = male_cell
+        elif pd.notna(total_cell):
+            self.country_row[total_column] = total_cell
             self.country_row[female_column] = None
             self.country_row[male_column] = None
         else:
@@ -134,18 +129,24 @@ class BasePlugin:
          female_percent_column,
          male_percent_column) = self._get_breakdown_columns(percent_column)
 
-        if (self.country_row[female_absolute_column]
-                and self.country_row[male_absolute_column]):
+        total_abs_cell = self.country_row[total_absolute_column]
+        female_abs_cell = self.country_row[female_absolute_column]
+        male_abs_cell = self.country_row[male_absolute_column]
+        female_percent_cell = self.sex_table[percent_column]['female']
+        male_percent_cell = self.sex_table[percent_column]['male']
+
+        if pd.notna(female_abs_cell) and pd.notna(male_abs_cell):
             self.country_row[female_percent_column] = (
-                                self.country_row[female_absolute_column] /
-                                self.country_row[total_absolute_column]) * 100
+                                female_abs_cell /
+                                total_abs_cell
+                                ) * 100
             self.country_row[male_percent_column] = (
-                                self.country_row[male_absolute_column] /
-                                self.country_row[total_absolute_column]) * 100
-        elif (self.sex_table[percent_column]['female']
-                and self.sex_table[percent_column]['male']):
-            self.country_row[female_percent_column] = self.sex_table[percent_column]['female']
-            self.country_row[male_percent_column] = self.sex_table[percent_column]['male']
+                                male_abs_cell /
+                                total_abs_cell
+                                ) * 100
+        elif pd.notna(female_percent_cell) and pd.notna(male_percent_cell):
+            self.country_row[female_percent_column] = female_percent_cell
+            self.country_row[male_percent_column] = male_percent_cell
         else:
             self.country_row[female_percent_column] = None
             self.country_row[male_percent_column] = None
@@ -160,32 +161,45 @@ class BasePlugin:
 
         proportion_total_key = f"Proportion {compare_col_one} to {compare_col_two} (total)"
         proportion_male_key = f"Proportion {compare_col_one} to {compare_col_two} (male)"
-        proportion_female_key = f"Proportion {compare_col_two} to {compare_col_two} (female)"
+        proportion_female_key = f"Proportion {compare_col_one} to {compare_col_two} (female)"
         ratio_key = f"Ratio {compare_col_one} to {compare_col_two} (male:female)"
 
+        total_cell_one = self.country_row[total_col_one]
+        total_cell_two = self.country_row[total_col_two]
 
-        if self.country_row[total_col_one] and self.country_row[total_col_two]:
+        female_cell_one = self.country_row[female_col_one]
+        female_cell_two = self.country_row[female_col_two]
+
+        male_cell_one = self.country_row[male_col_one]
+        male_cell_two = self.country_row[male_col_two]
+
+        if pd.notna(total_cell_one) and pd.notna(total_cell_two):
             self.country_row[proportion_total_key] = (
-                                self.country_row[total_col_one] /
-                                self.country_row[total_col_two])
+                                    total_cell_one / total_cell_two
+                                    )
         else:
             self.country_row[proportion_total_key] = None
 
-        if self.country_row[male_col_one] and self.country_row[male_col_two]:
+        if pd.notna(male_cell_one) and pd.notna(male_cell_two):
             self.country_row[proportion_male_key] = (
-                                self.country_row[male_col_one] /
-                                self.country_row[male_col_two])
-        if (self.country_row[female_col_one]
-                and self.country_row[female_col_two]):
-            self.country_row[proportion_female_key] = (
-                                self.country_row[female_col_one] /
-                                self.country_row[female_col_two])
+                                male_cell_one /
+                                male_cell_two
+                                )
 
-        if (self.country_row[proportion_male_key]
-                and self.country_row[proportion_female_key]):
-            self.country_row[ratio_key] = (
-                self.country_row[proportion_male_key] /
-                self.country_row[proportion_female_key])
+        if pd.notna(female_cell_one) and pd.notna(female_cell_two):
+            self.country_row[proportion_female_key] = (
+                                female_cell_one /
+                                female_cell_two
+                                )
+
+        if (proportion_male_key in self.country_row
+                    and proportion_female_key in self.country_row):
+            if (pd.notna(self.country_row[proportion_male_key])
+                    and pd.notna(self.country_row[proportion_female_key])):
+                self.country_row[ratio_key] = (
+                                    self.country_row[proportion_male_key] /
+                                    self.country_row[proportion_female_key]
+                                    )
 
     def download(self):
         base_path = f"{self.COUNTRY}/{datetime.date(datetime.now())}"

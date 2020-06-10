@@ -12,14 +12,14 @@ class ArgentinaPlugin(BasePlugin):
     TYPE = "PDF"
 
     def fetch(self):
-        pass
+        # pass
 
-        # self.sex_table['absolute_cases']['total'] = 30
-        # self.sex_table['absolute_cases']['male'] = 30
-        # self.sex_table['absolute_cases']['female'] = 30
-        #
-        # self.sex_table['percent_cases']['female'] = .3
-        #
-        # self.sex_table['absolute_deaths']['total'] = 10
-        # self.sex_table['absolute_deaths']['male'] = 3
-        # self.sex_table['absolute_deaths']['female'] = 10
+        self.sex_table['absolute_cases']['total'] = 30
+        self.sex_table['absolute_cases']['male'] = 30
+        self.sex_table['absolute_cases']['female'] = 30
+
+        self.sex_table['percent_cases']['female'] = .3
+
+        self.sex_table['absolute_deaths']['total'] = 10
+        self.sex_table['absolute_deaths']['male'] = 3
+        self.sex_table['absolute_deaths']['female'] = 10
