@@ -107,12 +107,15 @@ def download(_: Info, country: str):
             # df = pd.DataFrame()
             country_rows = {}
             for country in countries:
-                country_plugin = plugin_selector(country)
-                country_plugin.fetch()
-                country_plugin.create_country_row()
-                # if not len(df.columns):
-                #     df.columns = country_plugin.country_row.index
-                country_rows[country] = country_plugin.country_row
+                try:
+                    country_plugin = plugin_selector(country)
+                    country_plugin.fetch()
+                    country_plugin.create_country_row()
+                    # if not len(df.columns):
+                    #     df.columns = country_plugin.country_row.index
+                    country_rows[country] = country_plugin.country_row
+                except:
+                    print(f"unable to download for {country}")
             df = pd.DataFrame.from_dict(country_rows, orient="index")
             df.to_csv('country_data.csv')
 

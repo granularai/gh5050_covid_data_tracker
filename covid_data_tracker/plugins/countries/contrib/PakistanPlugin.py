@@ -10,7 +10,8 @@ class PakistanPlugin(BasePlugin):
     # BASE_SOURCE = "http://covid.gov.pk/stats/pakistan"
     BASE_SOURCE = "https://datastudio.google.com/embed/reporting/1PLVi5amcc_R5Gh928gTE8-8r8-fLXJQF/page/R24IB"
     TYPE = "Dashboard: Google Data Studio"
-
+    AUTHOR = "Sid Gupta"
+    
     def fetch(self):
         pass
         # driver = webdriver.Chrome(executable_path='./bin/chromedriver_mac')

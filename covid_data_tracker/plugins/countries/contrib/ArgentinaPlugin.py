@@ -10,6 +10,7 @@ class ArgentinaPlugin(BasePlugin):
     COUNTRY = "Argentina"
     BASE_SOURCE = "https://www.argentina.gob.ar/coronavirus/oiraid-emrofni/mayo2020"
     TYPE = "PDF"
+    AUTHOR = "Sid Gupta"
 
     def fetch(self):
         # pass

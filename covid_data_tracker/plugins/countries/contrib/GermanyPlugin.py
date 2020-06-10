@@ -11,7 +11,8 @@ class GermanyPlugin(BasePlugin):
     COUNTRY = "Germany"
     SOURCE = "https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Fallzahlen.html"
     TYPE = "PDF"
-
+    AUTHOR = "Sid Gupta"
+    
     def fetch(self):
         latest_content = requests.get(self.SOURCE)
 
