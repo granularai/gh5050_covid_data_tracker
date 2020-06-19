@@ -24,13 +24,17 @@ class RomaniaPlugin(BasePlugin):
     COUNTRY = "Romania"
     BASE_URL = "https://www.cnscbt.ro/"
     BASE_SOURCE = "https://www.cnscbt.ro/index.php/analiza-cazuri-confirmate-covid19/"
+    UNIQUE_SOURCE = "https://www.cnscbt.ro/index.php/analiza-cazuri-confirmate-covid19/1804-raport-saptamanal-episaptamana23"
     TYPE = "PDF"
     AUTHOR = "Sagar Verma"
+    FREQUENCY = "weekly"
+    ARCHIVE_AVAILABLE = "True"
 
     def fetch(self):
         self.get_dates()
         self.local_filename = './Romania.pdf'
-        with requests.get(self.dates[0], stream=True) as r:
+        self.DATE = self.dates[0][0]
+        with requests.get(self.dates[0][1], stream=True) as r:
             r.raise_for_status()
             with open(self.local_filename, 'wb') as f:
                 for chunk in r.iter_content(chunk_size=8192):
@@ -70,9 +74,12 @@ class RomaniaPlugin(BasePlugin):
         archive_parsed = BeautifulSoup(archive.text)
         table = archive_parsed.find_all('table')[0]
         hrefs = []
-        for tag in table.find_all('a', attrs={'class':'docman_download__button'}):
-            link = np.where(tag.has_attr('href'),tag.get('href'), "no link")
+        for tag in zip(table.find_all('a', attrs={'class':'docman_download__button'}),
+                       table.find_all('time', attrs={'itemprop':'datePublished'})):
+
+            link = np.where(tag[0].has_attr('href'), tag[0].get('href'), "no link")
+            date = np.where(tag[1].has_attr('datetime'), tag[1].get('datetime'), "date")
 
             if 'raport-saptamanal-episaptamana' in str(link):
-                hrefs.append(str(link))
-        self.dates = [urljoin(self.BASE_URL, str(a)) for a in hrefs]
+                hrefs.append([date, str(link)])
+        self.dates = [[a[0], urljoin(self.BASE_URL, str(a[1]))] for a in hrefs]
