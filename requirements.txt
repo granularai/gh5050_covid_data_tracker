@@ -6,8 +6,10 @@ bs4
 googletrans
 lxml
 tabula-py
-tabulate>=0.8.7
+tabulate
 pdfminer
+pandas
+requests
 
 flake8>=3.7.9,<4
 flake8-docstrings>=1.5.0,<2
