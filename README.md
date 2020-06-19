@@ -10,15 +10,19 @@ This tool to automates data fetching for COVID-19 by country, including gender d
 
 * [covid_data_tracker](http://GH5050_COVID_Data_Tracker.readthedocs.io/) -->
 
-- [Globalhealth 50/50 - COVID-19 Data tracker](#globalhealth-5050---covid-19-data-tracker)
-- [Elements](#elements)
+- [Globalhealth 50/50 - COVID-19 Data tracker](#globalhealth-50-50---covid-19-data-tracker)
+- [Installation](#installation)
+  * [Quickstart](#quickstart)
+- [Project Elements](#project-elements)
   * [CLI](#cli)
   * [BasePlugin](#baseplugin)
   * [PluginRegistry](#pluginregistry)
   * [Country Plugins](#country-plugins)
-- [Areas to contribute](#areas-to-contribute)
+  * [Contribution Basics](#contribution-basics)
+  * [Contribution workflow](#contribution-workflow)
+  * [Areas to contribute](#areas-to-contribute)
   * [Overall strategy](#overall-strategy)
-  * [Country Plugins (see plugin section below)](#country-plugins-see-plugin-section-below)
+  * [Country Plugins (see plugin section below)](#country-plugins--see-plugin-section-below-)
   * [Validation](#validation)
   * [Core Project](#core-project)
 - [Country Plugins](#country-plugins-1)
@@ -29,7 +33,21 @@ This tool to automates data fetching for COVID-19 by country, including gender d
   * [Authors](#authors)
   * [License](#license)
 
-# Elements
+
+# Installation
+
+## Quickstart
+This should allow you to get started with the tool:
+```
+git clone https://github.com/granularai/gh5050_covid_data_tracker
+make venv
+source venv/bin/activate
+
+covidtracker ...
+
+```
+
+# Project Elements
 
 ## CLI
 
@@ -76,7 +94,44 @@ The [PluginRegistry](https://github.com/granularai/gh5050_covid_data_tracker/blo
 
 Country Plugins (eg [CzechRepublicPlugin.py](https://github.com/granularai/gh5050_covid_data_tracker/blob/sex-disaggregated-reporting/covid_data_tracker/plugins/countries/CzechRepublicPlugin.py)) inherit BasePlugin and are responsible for defining country-specific scraping logic as well as static and capture specific metadata.
 
-# Areas to contribute
+#Contribute
+
+## Contribution Basics
+
+1. We use git flow to manage development.  If you are not familiar with git flow please see this:
+https://nvie.com/posts/a-successful-git-branching-model/
+
+2. To make the process of contributing substantially easier, we recommend installing git-flow-avh:
+https://github.com/petervanderdoes/gitflow-avh
+installation instructions:
+MacOS: https://github.com/petervanderdoes/gitflow-avh/wiki/Installing-on-Mac-OS-X
+Windows: https://github.com/petervanderdoes/gitflow-avh/wiki/Installing-on-Windows
+Linux: https://github.com/petervanderdoes/gitflow-avh/wiki/Installing-on-Linux,-Unix,-etc.
+
+## Contribution workflow
+
+To create a new plugin, please use the `feature` command:
+
+```
+git flow feature start Atlantis
+
+...
+
+git flow feature finish Atlantis
+```
+
+
+Because we are using feature to exclusively track plugins, if you are propose modifications to the core repo, please use the `bugfix` command:
+eg -
+```
+git flow bugfix start update_readme
+
+... (make changes) ...
+
+git flow bugfix finish update_readme
+```
+
+## Areas to contribute
 We encourage people to participate in the development of country plugins and reviewing the reliability of existing plugins.  If you are interested in contributing, please find [an available source checklist template](https://github.com/granularai/gh5050_covid_data_tracker/issues?page=1&q=is%3Aopen+is%3Aissue+label%3A%22Country+Checklist%22) or create your own if your country is not listed (this prevents effort duplication).
 
 If you are interested in collaborating or contributing please see areas where we need help below.  If you would like to connect, please reach out to us at team@granular.ai.
