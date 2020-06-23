@@ -1,7 +1,7 @@
 from pathlib import Path
 from datetime import datetime
 import pandas as pd
-
+from covid_data_tracker.plugins.exceptions import PluginAttributeMissingError
 
 class BasePlugin:
     """A base plugin that serves as a template for country-specific plugins.
@@ -58,8 +58,7 @@ class BasePlugin:
 
         for required in cls.required_cls_attr:
             if not getattr(cls, required):
-                raise TypeError(f"Can't instantiate class {cls.__name__}"
-                                f"without {required} attribute defined")
+                raise PluginAttributeMissingError(cls.__name__, required)
         super().__init_subclass__(**kwargs)
         cls.PluginRegistry[cls.COUNTRY] = cls
 
@@ -69,8 +68,7 @@ class BasePlugin:
         # self.DATE: datetime.date()  # the last date for which this data is accurate
         for required in self.required_obj_attr:
             if not getattr(self, required):
-                raise TypeError(f"Can't instantiate class {self.__name__}"
-                                f"without {required} attribute defined")
+                raise PluginAttributeMissingError(self.__name__, required)
 
     def fetch(self):
         raise NotImplementedError
