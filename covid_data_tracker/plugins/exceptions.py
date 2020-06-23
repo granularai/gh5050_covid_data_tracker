@@ -13,7 +13,8 @@ class PluginBaseError(Exception):
 class PluginAttributeMissingError(PluginBaseError):
     """Raised when a plugin is missing a required attribute"""
     def __init__(self, plugin_name, required):
-        message = f"Cannot instantiate class {plugin_name} without {required} attribute defined"
+        message = (f"Cannot instantiate class {plugin_name} "
+                   f"without {required} attribute defined")
         super().__init__(message)
 
 

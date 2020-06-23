@@ -208,7 +208,7 @@ class BasePlugin:
                                 )
 
         if (proportion_male_key in self.country_row
-                    and proportion_female_key in self.country_row):
+                and proportion_female_key in self.country_row):
             if (pd.notna(self.country_row[proportion_male_key])
                     and pd.notna(self.country_row[proportion_female_key])):
                 self.country_row[ratio_key] = (
