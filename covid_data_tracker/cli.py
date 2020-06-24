@@ -23,9 +23,11 @@ import click
 from .__init__ import __version__
 
 from covid_data_tracker.registry import PluginRegistry
-from covid_data_tracker.util import plugin_selector, country_downloader
+from covid_data_tracker.util import (plugin_selector,
+                                     country_downloader,
+                                     all_country_dataframe,
+                                     to_gsheets)
 import tabulate
-import pandas as pd
 
 LOGGING_LEVELS = {
     0: logging.NOTSET,
@@ -90,43 +92,31 @@ def info(_: Info, country: str):
     click.echo(tabulate.tabulate(info[1:], info[0]))
 
 
-
 @cli.command()
-# @click.option("--all", "-A",
-#               help="Select all countries. (overrides --country)",
-#               callback=download_all,
-#               is_flag=True,
-#               is_eager=True)
 @click.option("--country", "-c", help="Select a country.", prompt="Select a country, (or pass nothing to download all)", default="")
 @pass_info
 def download(_: Info, country: str):
     """Download country level statistics."""
     if not country:
-        click.echo(f"attempting to find available data for every country")
-        with click.progressbar(list(PluginRegistry)) as countries:
-            # df = pd.DataFrame()
-            country_rows = {}
-            for country in countries:
-                try:
-                    country_plugin = plugin_selector(country)
-                    country_plugin.fetch()
-                    country_plugin.check_instance_attributes()
-                    country_plugin.create_country_row()
-                    meta = {"Author": country_plugin.AUTHOR,
-                            "Source": country_plugin.UNIQUE_SOURCE,
-                            "Date": country_plugin.DATE}
-                    # if not len(df.columns):
-                    #     df.columns = country_plugin.country_row.index
-                    country_rows[country] = dict(country_plugin.country_row,
-                                                 **meta)
-                except Exception as e:
-                    print(f"unable to download for {country}")
-                    print(e)
-            df = pd.DataFrame.from_dict(country_rows, orient="index")
-            df.to_csv('country_data.csv')
-
+        df = all_country_dataframe()
+        df.to_csv('country_data.csv')
     else:
         country_downloader(country)
+
+
+@cli.command()
+@click.option("--country", "-c", help="Select a specific country.", default="")
+@click.option("--all", "-A", help="Select all countries (will override country option).", default=True)
+@click.option("--sa_key_path", "-sa", help="Provide path to service account for google.", required=True)
+@pass_info
+def to_sheet(_: Info, country: str, all: str, sa_key_path: str):
+    """Push country level statistics to google spreadsheet."""
+    if all or not country:
+        df = all_country_dataframe()
+        to_gsheets(df, sa_key_path)
+    else:
+        raise NotImplementedError(
+            "Single country push to google sheets not yet available")
 
 
 @cli.command()
