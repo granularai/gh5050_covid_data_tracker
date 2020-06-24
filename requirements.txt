@@ -12,6 +12,7 @@ pandas
 requests
 gspread
 gspread-dataframe==3.0.7
+sodapy
 
 flake8>=3.7.9,<4
 flake8-docstrings>=1.5.0,<2
