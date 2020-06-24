@@ -78,10 +78,9 @@ def all_country_dataframe():
 
 
 def to_gsheets(df: pd.DataFrame,
-               sa_filepath: str,
-               spreadsheet_name: str = 'GH5050_Weekly_Country_Data',
-               worksheet_name: str = str(date.today()),
-               share_with: str = 'sid@granular.ai'):
+               spreadsheet_name: str,
+               share_with: str,
+               sa_filepath: str):
 
     gc = gspread.service_account(sa_filepath)
     spreadsheets = gc.list_spreadsheet_files()
@@ -92,6 +91,7 @@ def to_gsheets(df: pd.DataFrame,
         spreadsheet = gc.create(spreadsheet_name)
         spreadsheet.share(share_with, 'user', 'writer')
 
+    worksheet_name = str(date.today())
     num_rows = df.shape[0] + 1  # adding one row for header
     num_cols = df.shape[1]
 

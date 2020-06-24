@@ -106,14 +106,33 @@ def download(_: Info, country: str):
 
 @cli.command()
 @click.option("--country", "-c", help="Select a specific country.", default="")
-@click.option("--all", "-A", help="Select all countries (will override country option).", default=True)
-@click.option("--sa_key_path", "-sa", help="Provide path to service account for google.", required=True)
+@click.option("--all",
+              "-A",
+              help="Select all countries (will override country option).",
+              default=True)
+@click.option("--sheet",
+              "-gs",
+              help="Set name for existing or new google sheet",
+              default='GH5050_Weekly_Country_Data')
+@click.option("--share_with",
+              "-E",
+              help="Set an email to share generated sheet.",
+              default='sid@granular.ai')
+@click.option("--sa_key_path",
+              "-sa",
+              help="Provide path to service account for google.",
+              required=True)
 @pass_info
-def to_sheet(_: Info, country: str, all: str, sa_key_path: str):
+def to_sheet(_: Info,
+             country: str,
+             all: str,
+             sheet: str,
+             share_with: str,
+             sa_key_path: str):
     """Push country level statistics to google spreadsheet."""
     if all or not country:
         df = all_country_dataframe()
-        to_gsheets(df, sa_key_path)
+        to_gsheets(df, sheet, share_with, sa_key_path)
     else:
         raise NotImplementedError(
             "Single country push to google sheets not yet available")
