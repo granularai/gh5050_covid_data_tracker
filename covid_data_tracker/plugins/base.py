@@ -62,10 +62,7 @@ class BasePlugin:
         super().__init_subclass__(**kwargs)
         cls.PluginRegistry[cls.COUNTRY] = cls
 
-
     def check_instance_attributes(self):
-        # self.UNIQUE_SOURCE: str  # the source for the specific pull
-        # self.DATE: datetime.date()  # the last date for which this data is accurate
         for required in self.required_obj_attr:
             if not getattr(self, required):
                 raise PluginAttributeMissingError(self.__name__, required)
