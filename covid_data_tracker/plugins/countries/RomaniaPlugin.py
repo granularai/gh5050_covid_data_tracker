@@ -1,13 +1,11 @@
+import tempfile
 import requests
 from urllib.parse import urljoin
 from io import StringIO
 from bs4 import BeautifulSoup
-import re
 
-import pandas as pd
 import numpy as np
 
-from googletrans import Translator
 
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
@@ -32,15 +30,14 @@ class RomaniaPlugin(BasePlugin):
 
     def fetch(self):
         self.get_dates()
-        self.local_filename = './Romania.pdf'
+        self.temp_file = tempfile.TemporaryFile()
         self.DATE = self.dates[0][0]
         with requests.get(self.dates[0][1], stream=True) as r:
             r.raise_for_status()
-            with open(self.local_filename, 'wb') as f:
-                for chunk in r.iter_content(chunk_size=8192):
-                    f.write(chunk)
+            for chunk in r.iter_content(chunk_size=8192):
+                self.temp_file.write(chunk)
 
-        self.parsed_text =  "\n".join([ll.rstrip() for ll in self.parse_text().splitlines() if ll.strip()])
+        self.parsed_text = "\n".join([ll.rstrip() for ll in self.parse_text().splitlines() if ll.strip()])
         identifier = 'Caracteristici\nn\n%\n'
         loc = self.parsed_text.find(identifier) + len(identifier)
         next_identifier = '\nVarsta'
@@ -56,7 +53,7 @@ class RomaniaPlugin(BasePlugin):
 
     def parse_text(self):
         output_string = StringIO()
-        with open(self.local_filename, 'rb') as in_file:
+        with self.temp_file as in_file:
             parser = PDFParser(in_file)
             doc = PDFDocument(parser)
             rsrcmgr = PDFResourceManager()
@@ -71,7 +68,7 @@ class RomaniaPlugin(BasePlugin):
 
     def get_dates(self):
         archive = requests.get(self.BASE_SOURCE)
-        archive_parsed = BeautifulSoup(archive.text)
+        archive_parsed = BeautifulSoup(archive.text, features="lxml")
         table = archive_parsed.find_all('table')[0]
         hrefs = []
         for tag in zip(table.find_all('a', attrs={'class':'docman_download__button'}),
