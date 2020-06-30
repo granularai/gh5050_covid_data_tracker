@@ -132,7 +132,9 @@ git flow bugfix finish update_readme
 ```
 
 ## Areas to contribute
-We encourage people to participate in the development of country plugins and reviewing the reliability of existing plugins.  If you are interested in contributing, please find [an available source checklist template](https://github.com/granularai/gh5050_covid_data_tracker/issues?page=1&q=is%3Aopen+is%3Aissue+label%3A%22Country+Checklist%22) or create your own if your country is not listed (this prevents effort duplication).
+We encourage people to participate in the development of country plugins and reviewing the reliability of existing plugins.  If you are interested in contributing, please start by reviewing this document to see which countries are unclaimed and metadata regarding data storage: [Country Data Sources and Metadata](https://docs.google.com/spreadsheets/d/18zKl6En60AvFxRI6AH4A6McsX2Hy2Mcdio_L7wn8ghw/edit?usp=sharing )
+
+To claim a country, please add your name in a comment on the sheet. Optionally, find the country checklist here [an available source checklist template](https://github.com/granularai/gh5050_covid_data_tracker/issues?page=1&q=is%3Aopen+is%3Aissue+label%3A%22Country+Checklist%22) or create your own if your country is not listed (this prevents effort duplication).
 
 If you are interested in collaborating or contributing please see areas where we need help below.  If you would like to connect, please reach out to us at team@granular.ai.
 
